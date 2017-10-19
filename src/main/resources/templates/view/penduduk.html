@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="include/head"></div>
+<body>
+<div th:replace="include/navbar"></div>
+<div class="container">
+
+    <!-- Title -->
+    <div class="container-fluid">
+        <h3 th:text="'Lihat Data Penduduk - ' + ${penduduk.nik}"></h3><br/>
+        <a class="btn btn-default" th:href="'/penduduk/ubah/' + ${penduduk.nik}" th:text="Update"></a>
+    </div>
+
+    <hr/>
+
+    <!-- Data -->
+    <div class="container fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <h6 class="bold">NIK</h6>
+                <h6 class="bold">Nama</h6>
+                <h6 class="bold">Jenis Kelamin</h6>
+                <h6 class="bold">Tempat/Tanggal Lahir</h6>
+                <h6 class="bold">Alamat</h6>
+                <h6 class="bold">RT/RW</h6>
+                <h6 class="bold">Kelurahan/Desa</h6>
+                <h6 class="bold">Kecamatan</h6>
+                <h6 class="bold">Kota</h6>
+                <h6 class="bold">Golongan Darah</h6>
+                <h6 class="bold">Agama</h6>
+                <h6 class="bold">Status Perkawinan</h6>
+                <h6 class="bold">Pekerjaan</h6>
+                <h6 class="bold">Kewarnegaraan</h6>
+                <h6 class="bold">Status Kematian</h6>
+            </div>
+
+            <div class="col-lg-3">
+                <h6 th:text="${penduduk.nik}">NIK</h6>
+                <h6 th:text="${penduduk.nama}">Nama</h6>
+                <h6 th:text="${penduduk.jenis_kelamin}">Nama</h6>
+                <h6 th:text="${penduduk.tempat_lahir} + '/' + ${penduduk.tanggal_lahir}">Tempat/Tanggal Lahir</h6>
+                <h6 th:text="${keluarga.alamat}">Alamat</h6>
+                <h6 th:text="${keluarga.rt} + '/' + ${keluarga.rw}">RT/RW</h6>
+                <h6 th:text="${kelurahan.nama_kelurahan}">Kelurahan/Desa</h6>
+                <h6 th:text="${kecamatan.nama_kecamatan}">Kecamatan</h6>
+                <h6 th:text="${kota.nama_kota}">Kota</h6>
+                <h6 th:text="${penduduk.golongan_darah}">Golongan Darah</h6>
+                <h6 th:text="${penduduk.agama}">Agama</h6>
+                <h6 th:text="${penduduk.status_perkawinan}">Status Perkawinan</h6>
+                <h6 th:text="${penduduk.pekerjaan}">Pekerjaan</h6>
+                <h6 th:text="${penduduk.is_wni}">Kewarnegaraan</h6>
+                <h6 th:text="${penduduk.is_wafat}">Status Kematian</h6>
+            </div>
+        </div>
+    </div>
+
+    <br/>
+
+    <!-- Form Nonaktif -->
+    <div class="container-fluid">
+        <form method="post" th:action="'/penduduk/mati'">
+            <input type="hidden" name="nik" th:value="${penduduk.nik}" />
+            <button type="submit" class="btn btn-default">Nonaktifkan</button>
+        </form>
+    </div>
+
+<div th:replace="include/footer"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+.navbar{
+    margin-top: -50px;
+    border-radius: 0;
+    width: 100%;
+    position: fixed;
+    z-index: 2;
+}
+
+body{
+    padding: 0;
+    background-color: #FCFAFB;
+}
+
+.container-fluid{
+    padding: 10px 0;
+}
+
+hr{
+    border: 1px solid #D3D1D2;
+}
+
+.form-control{
+    width: 400px;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.center{
+    text-align: center;
+}
+
+footer{
+    text-align: center;
+    margin: 20px 0;
+}
+
+body > .container{
+    margin-top: 50px;
+}

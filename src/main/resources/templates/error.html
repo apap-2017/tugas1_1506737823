@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="include/head"></div>
+<body>
+<div th:replace="include/navbar"></div>
+<div class="container">
+
+    <!-- Title -->
+    <div class="container-fluid">
+        <h1 class="bold">Error !</h1>
+        <h5 th:text="${error}">Teks bila error</h5>
+    </div>
+
+    <div th:replace="include/footer"></div>
+</div>
+</body>
+</html>

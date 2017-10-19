@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="include/head"></div>
+<body>
+<div th:replace="include/navbar"></div>
+<div class="container">
+
+    <!-- Title -->
+    <div class="container-fluid">
+        <h3>Update Keluarga</h3>
+    </div>
+
+    <hr/>
+
+    <!-- Form -->
+    <div class="container-fluid">
+        <form method="post" th:action="'/keluarga/ubah/' + ${keluarga.nomor_kk}" th:object="${keluarga}">
+
+            <div class="form-group">
+                <label for="alamat"><h6>Alamat</h6></label>
+                <input type="name" class="form-control" name="alamat" id="alamat" maxlength="256" required="true" th:value="${keluarga.alamat}" th:field="*{alamat}" placeholder=""/>
+            </div>
+
+            <div class="form-group">
+                <label for="rt"><h6>RT</h6></label>
+                <input type="number" class="form-control" name="rt" id="rt" maxlength="3" th:value="${keluarga.rt}" th:field="*{rt}" required="true"/>
+            </div>
+
+            <div class="form-group">
+                <label for="rw"><h6>RW</h6></label>
+                <input type="number" class="form-control" name="rw" id="rw" maxlength="3" th:value="${keluarga.rw}" th:field="*{rw}" required="true"/>
+            </div>
+
+            <div class="form-group">
+                <label for="id_kelurahan"><h6>Kota / Kecamatan / Kelurahan</h6></label>
+                <select class="form-control" name="id_kelurahan" id="id_kelurahan" th:value="${keluarga.id_kelurahan}" th:field="*{id_kelurahan}" required="true">
+                    <option value="" th:disabled="disabled" th:selected="selected">Pilih Kelurahan</option>
+                    <div th:each="kelurahan : ${kelurahan}">
+                        <option th:value="${kelurahan.id}" th:text="${kelurahan.nama_kelurahan}">Kelurahan yang mau dipilih</option>
+                    </div>
+                </select>
+            </div>
+
+            <br/>
+            <button type="submit" class="btn btn-default">Simpan</button>
+        </form>
+    </div>
+
+    <div th:replace="include/footer"></div>
+</div>
+</body>
+</html>
