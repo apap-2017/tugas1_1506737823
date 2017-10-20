@@ -21,7 +21,7 @@ public interface KeluargaDAO {
     @Select("select * from keluarga where nomor_kk LIKE #{nkk}")
     List<Keluarga> selectSimilarNKK(@Param("nkk") String nkk);
 
-    @Insert("insert into keluarga (id, nomor_kk, alamat, rt, rw, id_kelurahan, is_tidak_berlaku) values (#{id}, #{nomor_kk}, #{alamat}, #{rt}, #{rw}, #{id_kelurahan}, #{is_tidak_berlaku})")
+    @Insert("insert into keluarga (nomor_kk, alamat, rt, rw, id_kelurahan, is_tidak_berlaku) values (#{nomor_kk}, #{alamat}, #{rt}, #{rw}, #{id_kelurahan}, #{is_tidak_berlaku})")
     void addKeluarga(Keluarga keluarga);
 
     @Update("update keluarga set nomor_kk = #{nomor_kk}, alamat = #{alamat}, rt = #{rt}, rw = #{rw}, id_kelurahan = #{id_kelurahan}, is_tidak_berlaku = #{is_tidak_berlaku} where id = #{id}")

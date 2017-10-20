@@ -116,9 +116,6 @@ public class PendudukController {
         nik = nik + nomor;
         penduduk.setNik(nik);
 
-        List<Penduduk> pendudukList = pendudukService.selectAllPenduduk();
-        penduduk.setId("" + (pendudukList.size() + 1));;
-
         pendudukService.addPenduduk(penduduk);
 
         model.addAttribute("confirmation", "Penduduk dengan NIK " + nik + " berhasil ditambahkan");
@@ -146,10 +143,9 @@ public class PendudukController {
         Penduduk penduduk = pendudukService.selectPenduduk(nik);
 
         if(penduduk != null){
-            penduduk.setGolongan_darah(penduduk.getGolongan_darah().substring(0,1));
             model.addAttribute("penduduk", penduduk);
         } else {
-            model.addAttribute("error", "NKK tidak ditemukan");
+            model.addAttribute("error", "NIK tidak ditemukan");
             return "view/error";
         }
 
@@ -170,24 +166,34 @@ public class PendudukController {
         Kelurahan kelurahan = kelurahanService.selectKelurahan(keluarga.getId_kelurahan());
         Kecamatan kecamatan = kecamatanService.selectKecamatan(kelurahan.getId_kecamatan());
 
-        String[] tglLahir = penduduk.getTanggal_lahir().split("-");
-        if(penduduk.getJenis_kelamin().equals("1")){
-            tglLahir[2] = (Integer.parseInt(tglLahir[2]) + 40) + "";
-        }String nik = kecamatan.getKode_kecamatan().substring(0,6) + tglLahir[2] + tglLahir[1] + tglLahir[0].substring(2);
+        Keluarga keluargaLama = keluargaService.selectKeluargaByID(penduduklama.getId_keluarga());
+        Kelurahan kelurahanLama = kelurahanService.selectKelurahan(keluargaLama.getId_kelurahan());
 
-        List<Penduduk> similar = pendudukService.selectSimilarNIK(nik + "%");
-        String nomor = "0001";
-        if(similar.size() > 0){
-            int nomorSimilar = Integer.parseInt(similar.get(similar.size()-1).getNik().substring(12)) + 1;
-            nomor = nomorSimilar + "";
+        String nik = nikLama;
+
+        if((!penduduk.getTanggal_lahir().equals(penduduklama.getTanggal_lahir())) || (!kelurahan.getId_kecamatan().equals(kelurahanLama.getId_kecamatan()))){
+            String[] tglLahir = penduduk.getTanggal_lahir().split("-");
+            if(penduduk.getJenis_kelamin().equals("1")){
+                tglLahir[2] = (Integer.parseInt(tglLahir[2]) + 40) + "";
+            }
+
+            nik = kecamatan.getKode_kecamatan().substring(0,6) + tglLahir[2] + tglLahir[1] + tglLahir[0].substring(2);
+
+            List<Penduduk> similar = pendudukService.selectSimilarNIK(nik + "%");
+            String nomor = "0001";
+            if(similar.size() > 0){
+                int nomorSimilar = Integer.parseInt(similar.get(similar.size()-1).getNik().substring(12)) + 1;
+                nomor = nomorSimilar + "";
+            }
+
+            int counter = 4 - nomor.length();
+            for(int i = 0; i < counter; i++){
+                nomor = "0" + nomor;
+            }
+
+            nik = nik + nomor;
         }
 
-        int counter = 4 - nomor.length();
-        for(int i = 0; i < counter; i++){
-            nomor = "0" + nomor;
-        }
-
-        nik = nik + nomor;
         penduduk.setNik(nik);
 
         penduduk.setId(penduduklama.getId());
@@ -200,11 +206,21 @@ public class PendudukController {
     }
 
     @PostMapping("/penduduk/mati")
-    public String nonaktifPenduduk(@RequestParam(value="nik") String nik, Model model){
+    public String nonaktifPenduduk(@RequestParam(value="nik", required = false) String nik, Model model){
+
+        if(nik == null){
+            model.addAttribute("error", "Masukkan input NIK");
+            return "view/error";
+        }
+
+        Penduduk penduduk = pendudukService.selectPenduduk(nik);
+        if(penduduk == null){
+            model.addAttribute("error", "NIK tidak ditemukan");
+            return "view/error";
+        }
 
         pendudukService.nonaktifkanPenduduk(nik);
 
-        Penduduk penduduk = pendudukService.selectPenduduk(nik);
         Keluarga keluarga = keluargaService.selectKeluargaByID(penduduk.getId_keluarga());
 
         keluarga.setIs_tidak_berlaku("1");
@@ -239,11 +255,32 @@ public class PendudukController {
             model.addAttribute("kota", kotaService.selectAllKota());
             return "view/cariPendudukKota";
         } else{
+
+            Kota kotaModel = kotaService.selectKota(kota);
+
+            if(kotaModel == null){
+                model.addAttribute("error", "Kota tidak ditemukan");
+                return "view/error";
+            }
+
             if(kecamatan == null){
                 model.addAttribute("kota", kotaService.selectKota(kota));
                 model.addAttribute("kecamatan", kecamatanService.selectAllKecamatan(kota));
                 return "view/cariPendudukKecamatan";
             } else{
+
+                Kecamatan kecamatanModel = kecamatanService.selectKecamatan(kecamatan);
+
+                if(kecamatanModel == null){
+                    model.addAttribute("error", "Kecamatan tidak ditemukan");
+                    return "view/error";
+                }
+
+                if(!kecamatanModel.getId_kota().equals(kota)){
+                    model.addAttribute("error", "Kecamatan tidak ditemukan");
+                    return "view/error";
+                }
+
                 if(kelurahan == null){
                     model.addAttribute("kota", kotaService.selectKota(kota));
                     model.addAttribute("kecamatan", kecamatanService.selectKecamatan(kecamatan));
@@ -251,6 +288,25 @@ public class PendudukController {
                     return "view/cariPendudukKelurahan";
                 }
             }
+        }
+
+        Kelurahan kelurahanModel = kelurahanService.selectKelurahan(kelurahan);
+
+        if(kelurahanModel == null){
+            model.addAttribute("error", "Kelurahan tidak ditemukan");
+            return "view/error";
+        }
+
+        Kecamatan kecamatanModel = kecamatanService.selectKecamatan(kecamatan);
+
+        if(!kecamatanModel.getId_kota().equals(kota)){
+            model.addAttribute("error", "Kecamatan tidak ditemukan");
+            return "view/error";
+        }
+
+        if(!kelurahanModel.getId_kecamatan().equals(kecamatan)){
+            model.addAttribute("error", "Kelurahan tidak ditemukan");
+            return "view/error";
         }
 
         List<Penduduk> pendudukList = pendudukService.selectPendudukByKelurahan(kelurahan);

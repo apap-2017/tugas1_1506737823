@@ -86,6 +86,7 @@ public class KeluargaController {
         List<Kelurahan> kelurahan = kelurahanService.selectAllKelurahan();
         List<Kecamatan> kecamatan = kecamatanService.selectAllKecamatan();
         List<Kota> kota = kotaService.selectAllKota();
+
         for(int i = 0; i < kelurahan.size(); i++){
             for(int j = 0; j < kecamatan.size(); j++){
                 for(int k = 0 ; k < kota.size(); k++){
@@ -139,9 +140,6 @@ public class KeluargaController {
         nkk += nomor;
         keluarga.setNomor_kk(nkk);
         keluarga.setIs_tidak_berlaku("0");
-
-        List<Keluarga> keluargaList = keluargaService.selectAllKeluarga();
-        keluarga.setId("" + (keluargaList.size() + 1));;
 
         String rt = keluarga.getRt();
         counter = 3 - rt.length();
@@ -214,16 +212,20 @@ public class KeluargaController {
         }
 
         Keluarga keluargaLama = keluargaService.selectKeluarga(nkkLama);
+        Kelurahan kelurahanLama = kelurahanService.selectKelurahan(keluargaLama.getId_kelurahan());
         Kelurahan kelurahan = kelurahanService.selectKelurahan(keluarga.getId_kelurahan());
 
-        if(keluarga.getId_kelurahan().equals(keluargaLama.getId_kelurahan())){
-            String nkk = kelurahan.getKode_kelurahan().substring(0,6);
+        String nkk = nkkLama;
 
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-            LocalDate localDate = LocalDate.now();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate localDate = LocalDate.now();
+        String[] date = dtf.format(localDate).split("/");
+        String tanggalTerbit = date[2] + date[1] + date[0].substring(2);
 
-            String[] date = dtf.format(localDate).split("/");
-            nkk += date[2] + date[1] + date[0].substring(2);
+        if((!kelurahan.getId_kecamatan().equals(kelurahanLama.getId_kecamatan())) || !tanggalTerbit.equals(keluargaLama.getNomor_kk().substring(6,12))){
+            nkk = kelurahan.getKode_kelurahan().substring(0,6);
+
+            nkk += tanggalTerbit;
 
             List<Keluarga> similar = keluargaService.selectSimilarNKK(nkk + "%");
             String nomor = "0001";
@@ -239,6 +241,31 @@ public class KeluargaController {
 
             nkk += nomor;
             keluarga.setNomor_kk(nkk);
+
+            List<Penduduk> anggotaPenduduk = pendudukService.selectAnggotaKeluarga(keluargaLama.getId());
+
+            for(int i = 0; i < anggotaPenduduk.size(); i++){
+                String temp = nkk.substring(0,6) + anggotaPenduduk.get(i).getNik().substring(6,12);
+
+                List<Penduduk> tempSimilar = pendudukService.selectSimilarNIK(temp + "%");
+                String tempNomor = "0001";
+                if(tempSimilar.size() > 0){
+                    int nomorSimilar = Integer.parseInt(tempSimilar.get(tempSimilar.size()-1).getNik().substring(12)) + 1;
+                    tempNomor = nomorSimilar + "";
+                }
+
+                int tempCounter = 4 - tempNomor.length();
+                for(int j = 0; j < tempCounter; j++){
+                    tempNomor = "0" + tempNomor;
+                }
+
+                temp = temp + tempNomor;
+
+                anggotaPenduduk.get(i).setNik(temp);
+
+                pendudukService.updatePenduduk(anggotaPenduduk.get(i));
+            }
+
         } else {
             keluarga.setNomor_kk(keluargaLama.getNomor_kk());
         }

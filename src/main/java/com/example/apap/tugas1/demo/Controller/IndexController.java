@@ -16,14 +16,4 @@ public class IndexController{
     public String konfirmasi(){
         return "view/confirmation";
     }
-
-    @RequestMapping("404")
-    String get404ErrorPage() {
-        return "/view/error";
-    }
-
-    @RequestMapping("401")
-    String get401ErrorPage() {
-        return "/view/error";
-    }
 }
