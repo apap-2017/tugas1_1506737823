@@ -171,7 +171,7 @@ public class PendudukController {
 
         String nik = nikLama;
 
-        if((!penduduk.getTanggal_lahir().equals(penduduklama.getTanggal_lahir())) || (!kelurahan.getId_kecamatan().equals(kelurahanLama.getId_kecamatan()))){
+        if((!penduduk.getTanggal_lahir().equals(penduduklama.getTanggal_lahir())) || (!kelurahan.getId_kecamatan().equals(kelurahanLama.getId_kecamatan())) || (!penduduk.getJenis_kelamin().equals(penduduklama.getJenis_kelamin()))){
             String[] tglLahir = penduduk.getTanggal_lahir().split("-");
             if(penduduk.getJenis_kelamin().equals("1")){
                 tglLahir[2] = (Integer.parseInt(tglLahir[2]) + 40) + "";
